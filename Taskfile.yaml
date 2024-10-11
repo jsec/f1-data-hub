@@ -1,0 +1,22 @@
+version: '3'
+
+tasks:
+  mysql:build:
+    dir: "{{.TASKFILE_DIR}}/docker"
+    cmds:
+      - cmd: docker build -f Dockerfile.mysql-seed -t f1db/seed:latest --no-cache .
+
+  db:seed:
+    dir: "{{.TASKFILE_DIR}}/docker"
+    cmds:
+      - task: mysql:build
+      - cmd: docker compose -f compose-seed.yaml up --force-recreate --wait
+        silent: true
+      - cmd: docker run --rm -it --net=host --name pgloader dimitri/pgloader:latest pgloader mysql://seed:seed@host.docker.internal:3306/f1db postgresql://seed:seed@host.docker.internal:5432/f1db
+      - task: db:seed:down
+
+  db:seed:down:
+    dir: "{{.TASKFILE_DIR}}/docker"
+    cmds:
+      - cmd: docker compose -f compose-seed.yaml down -v
+        silent: true

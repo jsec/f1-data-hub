@@ -1,0 +1,3 @@
+FROM mysql:8.0
+COPY ./scripts/fetch-mysql-dump.sh .
+RUN ["sh", "./fetch-mysql-dump.sh"]
