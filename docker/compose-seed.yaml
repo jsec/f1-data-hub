@@ -4,8 +4,8 @@ services:
     restart: always
     shm_size: 128mb
     environment:
-      POSTGRES_USER: seed
-      POSTGRES_PASSWORD: seed
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: f1db
     ports:
       - 5432:5432

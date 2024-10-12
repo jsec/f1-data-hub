@@ -1,5 +1,7 @@
 version: '3'
 
+dotenv: ['.direnv']
+
 tasks:
   mysql:build:
     dir: "{{.TASKFILE_DIR}}/docker"
@@ -12,11 +14,21 @@ tasks:
       - task: mysql:build
       - cmd: docker compose -f compose-seed.yaml up --force-recreate --wait
         silent: true
-      - cmd: docker run --rm -it --net=host --name pgloader dimitri/pgloader:latest pgloader mysql://seed:seed@host.docker.internal:3306/f1db postgresql://seed:seed@host.docker.internal:5432/f1db
-      - task: db:seed:down
+      - cmd: docker run --rm -it --net=host --name pgloader dimitri/pgloader:latest pgloader mysql://seed:seed@host.docker.internal:3306/f1db postgresql://$DATABASE_USER:$DATABASE_PASSWORD@host.docker.internal:5432/f1db
 
   db:seed:down:
     dir: "{{.TASKFILE_DIR}}/docker"
     cmds:
       - cmd: docker compose -f compose-seed.yaml down -v
         silent: true
+
+  dev:up:
+    dir: "{{.TASKFILE_DIR}}/docker"
+    cmds:
+      - cmd: docker compose -f compose-dev.yaml up --wait
+
+  dev:down:
+    dir: "{{.TASKFILE_DIR}}/docker"
+    cmds:
+      - cmd: docker compose -f compose-dev.yaml down
+
