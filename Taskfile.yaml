@@ -3,6 +3,13 @@ version: '3'
 dotenv: ['.direnv']
 
 tasks:
+  db:dump:
+    dir: "{{.TASKFILE_DIR}}/sql/schema"
+    cmds:
+      - cmd: rm schema.sql
+        silent: true
+      - cmd: pg_dump -s -n f1db -d f1db -U $DATABASE_USER > schema.sql
+
   db:migrate:
     dir: "{{.TASKFILE_DIR}}/sql/schema"
     cmds:
