@@ -3,16 +3,29 @@ version: '3'
 dotenv: ['.direnv']
 
 tasks:
+  db:migrate:
+    dir: "{{.TASKFILE_DIR}}/sql/schema"
+    cmds:
+      - cmd: goose up
+        silent: true
+
+  db:migrate:create:
+    dir: "{{.TASKFILE_DIR}}/sql/schema"
+    cmds:
+      - cmd: goose create {{.CLI_ARGS}} sql
+        silent: true
+
   db:push:
     cmds:
       - cmd: echo $CR_PAT | docker login ghcr.io -u jsec --password-stdin
         silent: true
       - cmd: docker push ghcr.io/jsec/f1db:latest
 
-  db:seed:build:
-    dir: "{{.TASKFILE_DIR}}/docker"
+  db:rollback:
+    dir: "{{.TASKFILE_DIR}}/sql/schema"
     cmds:
-      - cmd: docker build -f Dockerfile.mysql -t f1db/seed:latest --no-cache .
+      - cmd: goose down
+        silent: true
 
   db:seed:
     dir: "{{.TASKFILE_DIR}}/docker"
@@ -22,13 +35,18 @@ tasks:
         silent: true
       - cmd: docker run --rm -it --net=host --name pgloader dimitri/pgloader:latest pgloader mysql://seed:seed@host.docker.internal:3306/f1db postgresql://$DATABASE_USER:$DATABASE_PASSWORD@host.docker.internal:5432/f1db
 
+  db:seed:build:
+    dir: "{{.TASKFILE_DIR}}/docker"
+    cmds:
+      - cmd: docker build -f Dockerfile.mysql -t f1db/seed:latest --no-cache .
+
   db:seed:down:
     dir: "{{.TASKFILE_DIR}}/docker"
     cmds:
       - cmd: docker compose -f compose-seed.yaml down -v
         silent: true
 
-  dev:up:
+  dev:
     dir: "{{.TASKFILE_DIR}}/docker"
     cmds:
       - cmd: docker compose -f compose-dev.yaml up --wait
