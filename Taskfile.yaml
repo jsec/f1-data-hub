@@ -3,7 +3,13 @@ version: '3'
 dotenv: ['.direnv']
 
 tasks:
-  mysql:build:
+  db:push:
+    cmds:
+      - cmd: echo $CR_PAT | docker login ghcr.io -u jsec --password-stdin
+        silent: true
+      - cmd: docker push ghcr.io/jsec/f1db:latest
+
+  db:seed:build:
     dir: "{{.TASKFILE_DIR}}/docker"
     cmds:
       - cmd: docker build -f Dockerfile.mysql -t f1db/seed:latest --no-cache .
