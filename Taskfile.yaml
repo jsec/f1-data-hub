@@ -6,7 +6,7 @@ tasks:
   mysql:build:
     dir: "{{.TASKFILE_DIR}}/docker"
     cmds:
-      - cmd: docker build -f Dockerfile.mysql-seed -t f1db/seed:latest --no-cache .
+      - cmd: docker build -f Dockerfile.mysql -t f1db/seed:latest --no-cache .
 
   db:seed:
     dir: "{{.TASKFILE_DIR}}/docker"
