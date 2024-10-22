@@ -1,0 +1,58 @@
+name: CI
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  security:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23'
+
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@master
+        with:
+          args: -no-fail -fmt sarif -out gosec-results.sarif ./...
+          
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: gosec-results.sarif
+
+  style:
+    name: Style
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23'
+
+      - name: Install staticcheck
+        run: go install honnef.co/go/tools/cmd/staticcheck@latest
+
+      - name: go fmt check
+        run: test -z $(go fmt ./...)
+
+      - name: staticcheck
+        run: test -z $(staticcheck ./...)
