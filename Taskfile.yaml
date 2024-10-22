@@ -3,6 +3,13 @@ version: '3'
 dotenv: ['.direnv']
 
 tasks:
+  db:codegen:
+    cmds:
+      - cmd: sqlc generate
+        silent: true
+      - cmd: echo "Codegen complete"
+        silent: true
+
   db:dump:
     dir: "{{.TASKFILE_DIR}}/sql/schema"
     cmds:
@@ -52,6 +59,11 @@ tasks:
     cmds:
       - cmd: docker compose -f compose-seed.yaml down -v
         silent: true
+
+  db:update:
+    cmds:
+      - task: db:migrate
+      - task: db:codegen
 
   dev:
     dir: "{{.TASKFILE_DIR}}/docker"
