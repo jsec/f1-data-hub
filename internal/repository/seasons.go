@@ -22,7 +22,7 @@ type DriverStanding struct {
 func (r *Repository) GetDriverStandingsByYear(ctx context.Context, year int32) ([]DriverStanding, error) {
 	result, err := r.db.GetDriverStandingsByYear(ctx, year)
 	if err != nil {
-		return nil, fmt.Errorf("Error retrieving driver standings: %w", err)
+		return nil, fmt.Errorf("error retrieving driver standings: %w", err)
 	}
 
 	var standings []DriverStanding

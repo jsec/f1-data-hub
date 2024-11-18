@@ -23,14 +23,14 @@ type pitStop struct {
 func (i Imager) loadPitStops(ctx context.Context, tx pgx.Tx) error {
 	file, err := os.OpenFile("data/pit_stops.csv", os.O_RDONLY, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("Error opening pit stops CSV file: %w", err)
+		return fmt.Errorf("error opening pit stops CSV file: %w", err)
 	}
 	defer file.Close()
 
 	var pitStops []*pitStop
 
 	if err = gocsv.UnmarshalFile(file, &pitStops); err != nil {
-		return fmt.Errorf("Error marshaling pit stops CSV file: %w", err)
+		return fmt.Errorf("error marshaling pit stops CSV file: %w", err)
 	}
 
 	records := []database.SavePitStopsParams{}
@@ -49,7 +49,7 @@ func (i Imager) loadPitStops(ctx context.Context, tx pgx.Tx) error {
 
 	_, err = i.db.WithTx(tx).SavePitStops(ctx, records)
 	if err != nil {
-		return fmt.Errorf("Error saving pit stops: %w", err)
+		return fmt.Errorf("error saving pit stops: %w", err)
 	}
 
 	fmt.Println("[Pit Stops] seeding complete")

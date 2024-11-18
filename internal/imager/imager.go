@@ -21,14 +21,23 @@ func Run(ctx context.Context) error {
 
 	tx, err := pool.Begin(ctx)
 	if err != nil {
-		return fmt.Errorf("Error acquiring transaction: %w", err)
+		return fmt.Errorf("error acquiring transaction: %w", err)
 	}
+	defer tx.Rollback(ctx)
 
 	imager := Imager{
 		db: database.New(pool),
 	}
 
-	return imager.Seed(ctx, tx)
+	if err = imager.Seed(ctx, tx); err != nil {
+		return err
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (i Imager) Seed(ctx context.Context, tx pgx.Tx) error {

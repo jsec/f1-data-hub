@@ -22,14 +22,14 @@ type lapTime struct {
 func (i Imager) loadLapTimes(ctx context.Context, tx pgx.Tx) error {
 	file, err := os.OpenFile("data/lap_times.csv", os.O_RDONLY, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("Error opening lap times CSV file: %w", err)
+		return fmt.Errorf("error opening lap times CSV file: %w", err)
 	}
 	defer file.Close()
 
 	var lapTimes []*lapTime
 
 	if err = gocsv.UnmarshalFile(file, &lapTimes); err != nil {
-		return fmt.Errorf("Error marshaling lap times CSV file: %w", err)
+		return fmt.Errorf("error marshaling lap times CSV file: %w", err)
 	}
 
 	records := []database.SaveLapTimesParams{}
@@ -47,7 +47,7 @@ func (i Imager) loadLapTimes(ctx context.Context, tx pgx.Tx) error {
 
 	_, err = i.db.WithTx(tx).SaveLapTimes(ctx, records)
 	if err != nil {
-		return fmt.Errorf("Error saving lap times: %w", err)
+		return fmt.Errorf("error saving lap times: %w", err)
 	}
 
 	fmt.Println("[Lap Times] seeding complete")

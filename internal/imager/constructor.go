@@ -22,14 +22,14 @@ type constructor struct {
 func (i Imager) loadConstructors(ctx context.Context, tx pgx.Tx) error {
 	file, err := os.OpenFile("data/constructors.csv", os.O_RDONLY, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("Error opening constructors CSV file: %w", err)
+		return fmt.Errorf("error opening constructors CSV file: %w", err)
 	}
 	defer file.Close()
 
 	var constructors []*constructor
 
 	if err = gocsv.UnmarshalFile(file, &constructors); err != nil {
-		return fmt.Errorf("Error marshaling constructors CSV file: %w", err)
+		return fmt.Errorf("error marshaling constructors CSV file: %w", err)
 	}
 
 	records := []database.SaveConstructorsParams{}
@@ -46,7 +46,7 @@ func (i Imager) loadConstructors(ctx context.Context, tx pgx.Tx) error {
 
 	_, err = i.db.WithTx(tx).SaveConstructors(ctx, records)
 	if err != nil {
-		return fmt.Errorf("Error saving constructors: %w", err)
+		return fmt.Errorf("error saving constructors: %w", err)
 	}
 
 	return nil
@@ -63,14 +63,14 @@ type constructorResult struct {
 func (i Imager) loadConstructorResults(ctx context.Context, tx pgx.Tx) error {
 	file, err := os.OpenFile("data/constructor_results.csv", os.O_RDONLY, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("Error opening constructor results CSV file: %w", err)
+		return fmt.Errorf("error opening constructor results CSV file: %w", err)
 	}
 	defer file.Close()
 
 	var results []*constructorResult
 
 	if err = gocsv.UnmarshalFile(file, &results); err != nil {
-		return fmt.Errorf("Error marshaling constructor results CSV file: %w", err)
+		return fmt.Errorf("error marshaling constructor results CSV file: %w", err)
 	}
 
 	records := []database.SaveConstructorResultsParams{}
@@ -87,7 +87,7 @@ func (i Imager) loadConstructorResults(ctx context.Context, tx pgx.Tx) error {
 
 	_, err = i.db.WithTx(tx).SaveConstructorResults(ctx, records)
 	if err != nil {
-		return fmt.Errorf("Error saving constructor results: %w", err)
+		return fmt.Errorf("error saving constructor results: %w", err)
 	}
 
 	fmt.Println("[Constructor Results] seeding complete")
@@ -107,14 +107,14 @@ type constructorStanding struct {
 func (i Imager) loadConstructorStandings(ctx context.Context, tx pgx.Tx) error {
 	file, err := os.OpenFile("data/constructor_standings.csv", os.O_RDONLY, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("Error opening constructor standings CSV file: %w", err)
+		return fmt.Errorf("error opening constructor standings CSV file: %w", err)
 	}
 	defer file.Close()
 
 	var standings []*constructorStanding
 
 	if err = gocsv.UnmarshalFile(file, &standings); err != nil {
-		return fmt.Errorf("Error marshaling constructor standings CSV file: %w", err)
+		return fmt.Errorf("error marshaling constructor standings CSV file: %w", err)
 	}
 
 	records := []database.SaveConstructorStandingsParams{}
@@ -133,7 +133,7 @@ func (i Imager) loadConstructorStandings(ctx context.Context, tx pgx.Tx) error {
 
 	_, err = i.db.WithTx(tx).SaveConstructorStandings(ctx, records)
 	if err != nil {
-		return fmt.Errorf("Error saving constructor standings: %w", err)
+		return fmt.Errorf("error saving constructor standings: %w", err)
 	}
 
 	fmt.Println("[Constructor Standings] seeding complete")

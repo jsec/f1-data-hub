@@ -18,14 +18,14 @@ type season struct {
 func (i Imager) loadSeasons(ctx context.Context, tx pgx.Tx) error {
 	file, err := os.OpenFile("data/seasons.csv", os.O_RDONLY, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("Error opening seasons CSV file: %w", err)
+		return fmt.Errorf("error opening seasons CSV file: %w", err)
 	}
 	defer file.Close()
 
 	var seasons []*season
 
 	if err = gocsv.UnmarshalFile(file, &seasons); err != nil {
-		return fmt.Errorf("Error marshaling seasons CSV file: %w", err)
+		return fmt.Errorf("error marshaling seasons CSV file: %w", err)
 	}
 
 	records := []database.SaveSeasonsParams{}
@@ -39,7 +39,7 @@ func (i Imager) loadSeasons(ctx context.Context, tx pgx.Tx) error {
 
 	_, err = i.db.WithTx(tx).SaveSeasons(ctx, records)
 	if err != nil {
-		return fmt.Errorf("Error saving seasons: %w", err)
+		return fmt.Errorf("error saving seasons: %w", err)
 	}
 
 	fmt.Println("[Seasons] seeding complete")

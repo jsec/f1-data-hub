@@ -35,14 +35,14 @@ type result struct {
 func (i Imager) loadResults(ctx context.Context, tx pgx.Tx) error {
 	file, err := os.OpenFile("data/results.csv", os.O_RDONLY, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("Error opening results CSV file: %w", err)
+		return fmt.Errorf("error opening results CSV file: %w", err)
 	}
 	defer file.Close()
 
 	var results []*result
 
 	if err = gocsv.UnmarshalFile(file, &results); err != nil {
-		return fmt.Errorf("Error marshaling results CSV file: %w", err)
+		return fmt.Errorf("error marshaling results CSV file: %w", err)
 	}
 
 	records := []database.SaveResultsParams{}
@@ -72,7 +72,7 @@ func (i Imager) loadResults(ctx context.Context, tx pgx.Tx) error {
 
 	_, err = i.db.WithTx(tx).SaveResults(ctx, records)
 	if err != nil {
-		return fmt.Errorf("Error saving results: %w", err)
+		return fmt.Errorf("error saving results: %w", err)
 	}
 
 	fmt.Println("[Results] seeding complete")
@@ -103,14 +103,14 @@ type sprintResult struct {
 func (i Imager) loadSprintResults(ctx context.Context, tx pgx.Tx) error {
 	file, err := os.OpenFile("data/sprint_results.csv", os.O_RDONLY, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("Error opening sprint results CSV file: %w", err)
+		return fmt.Errorf("error opening sprint results CSV file: %w", err)
 	}
 	defer file.Close()
 
 	var results []*sprintResult
 
 	if err = gocsv.UnmarshalFile(file, &results); err != nil {
-		return fmt.Errorf("Error marshaling sprint results CSV file: %w", err)
+		return fmt.Errorf("error marshaling sprint results CSV file: %w", err)
 	}
 
 	records := []database.SaveSprintResultsParams{}
@@ -138,7 +138,7 @@ func (i Imager) loadSprintResults(ctx context.Context, tx pgx.Tx) error {
 
 	_, err = i.db.WithTx(tx).SaveSprintResults(ctx, records)
 	if err != nil {
-		return fmt.Errorf("Error saving sprint results: %w", err)
+		return fmt.Errorf("error saving sprint results: %w", err)
 	}
 
 	fmt.Println("[Sprint Results] seeding complete")

@@ -25,14 +25,14 @@ type qualifying struct {
 func (i Imager) loadQualifying(ctx context.Context, tx pgx.Tx) error {
 	file, err := os.OpenFile("data/qualifying.csv", os.O_RDONLY, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("Error opening qualifying CSV file: %w", err)
+		return fmt.Errorf("error opening qualifying CSV file: %w", err)
 	}
 	defer file.Close()
 
 	var results []*qualifying
 
 	if err = gocsv.UnmarshalFile(file, &results); err != nil {
-		return fmt.Errorf("Error marshaling qualifying CSV file: %w", err)
+		return fmt.Errorf("error marshaling qualifying CSV file: %w", err)
 	}
 
 	records := []database.SaveQualifyingResultsParams{}
@@ -53,7 +53,7 @@ func (i Imager) loadQualifying(ctx context.Context, tx pgx.Tx) error {
 
 	_, err = i.db.WithTx(tx).SaveQualifyingResults(ctx, records)
 	if err != nil {
-		return fmt.Errorf("Error saving qualifying results: %w", err)
+		return fmt.Errorf("error saving qualifying results: %w", err)
 	}
 
 	fmt.Println("[Qualifying] seeding complete")

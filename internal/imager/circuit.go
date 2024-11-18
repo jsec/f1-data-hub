@@ -26,14 +26,14 @@ type circuit struct {
 func (i Imager) loadCircuits(ctx context.Context, tx pgx.Tx) error {
 	file, err := os.OpenFile("data/circuits.csv", os.O_RDONLY, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("Error opening circuits CSV file: %w", err)
+		return fmt.Errorf("error opening circuits CSV file: %w", err)
 	}
 	defer file.Close()
 
 	var circuits []*circuit
 
 	if err = gocsv.UnmarshalFile(file, &circuits); err != nil {
-		return fmt.Errorf("Error marshaling circuits CSV file: %w", err)
+		return fmt.Errorf("error marshaling circuits CSV file: %w", err)
 	}
 
 	records := []database.SaveCircuitsParams{}
@@ -54,7 +54,7 @@ func (i Imager) loadCircuits(ctx context.Context, tx pgx.Tx) error {
 
 	_, err = i.db.WithTx(tx).SaveCircuits(ctx, records)
 	if err != nil {
-		return fmt.Errorf("Error saving circuits: %w", err)
+		return fmt.Errorf("error saving circuits: %w", err)
 	}
 
 	fmt.Println("[Circuits] seeding complete")

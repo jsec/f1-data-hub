@@ -26,14 +26,14 @@ type driver struct {
 func (i Imager) loadDrivers(ctx context.Context, tx pgx.Tx) error {
 	file, err := os.OpenFile("data/drivers.csv", os.O_RDONLY, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("Error opening driver CSV file: %w", err)
+		return fmt.Errorf("error opening driver CSV file: %w", err)
 	}
 	defer file.Close()
 
 	var drivers []*driver
 
 	if err = gocsv.UnmarshalFile(file, &drivers); err != nil {
-		return fmt.Errorf("Error marshaling driver CSV file: %w", err)
+		return fmt.Errorf("error marshaling driver CSV file: %w", err)
 	}
 
 	records := []database.SaveDriversParams{}
@@ -54,7 +54,7 @@ func (i Imager) loadDrivers(ctx context.Context, tx pgx.Tx) error {
 
 	_, err = i.db.WithTx(tx).SaveDrivers(ctx, records)
 	if err != nil {
-		return fmt.Errorf("Error saving drivers: %w", err)
+		return fmt.Errorf("error saving drivers: %w", err)
 	}
 
 	fmt.Println("[Drivers] seeding complete")
@@ -74,14 +74,14 @@ type driverStanding struct {
 func (i Imager) loadDriverStandings(ctx context.Context, tx pgx.Tx) error {
 	file, err := os.OpenFile("data/driver_standings.csv", os.O_RDONLY, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("Error opening driver standings CSV file: %w", err)
+		return fmt.Errorf("error opening driver standings CSV file: %w", err)
 	}
 	defer file.Close()
 
 	var standings []*driverStanding
 
 	if err = gocsv.UnmarshalFile(file, &standings); err != nil {
-		return fmt.Errorf("Error marshaling driver standings CSV file: %w", err)
+		return fmt.Errorf("error marshaling driver standings CSV file: %w", err)
 	}
 
 	records := []database.SaveDriverStandingsParams{}
@@ -100,7 +100,7 @@ func (i Imager) loadDriverStandings(ctx context.Context, tx pgx.Tx) error {
 
 	_, err = i.db.WithTx(tx).SaveDriverStandings(ctx, records)
 	if err != nil {
-		return fmt.Errorf("Error saving driver standings: %w", err)
+		return fmt.Errorf("error saving driver standings: %w", err)
 	}
 
 	fmt.Println("[Driver Standings] seeding complete")

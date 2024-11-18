@@ -34,14 +34,14 @@ type race struct {
 func (i Imager) loadRaces(ctx context.Context, tx pgx.Tx) error {
 	file, err := os.OpenFile("data/races.csv", os.O_RDONLY, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("Error opening races CSV file: %w", err)
+		return fmt.Errorf("error opening races CSV file: %w", err)
 	}
 	defer file.Close()
 
 	var races []*race
 
 	if err = gocsv.UnmarshalFile(file, &races); err != nil {
-		return fmt.Errorf("Error marshaling races CSV file: %w", err)
+		return fmt.Errorf("error marshaling races CSV file: %w", err)
 	}
 
 	records := []database.SaveRacesParams{}
@@ -71,7 +71,7 @@ func (i Imager) loadRaces(ctx context.Context, tx pgx.Tx) error {
 
 	_, err = i.db.WithTx(tx).SaveRaces(ctx, records)
 	if err != nil {
-		return fmt.Errorf("Error saving races: %w", err)
+		return fmt.Errorf("error saving races: %w", err)
 	}
 
 	fmt.Println("[Races] seeding complete")

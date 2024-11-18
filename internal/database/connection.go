@@ -15,7 +15,7 @@ func Connect(ctx context.Context) (*pgxpool.Pool, error) {
 
 	config, err := pgxpool.ParseConfig(connString)
 	if err != nil {
-		return nil, fmt.Errorf("Error parsing connection string: %w", err)
+		return nil, fmt.Errorf("error parsing connection string: %w", err)
 	}
 
 	config.AfterConnect = func(ctx context.Context, c *pgx.Conn) error {
@@ -25,7 +25,7 @@ func Connect(ctx context.Context) (*pgxpool.Pool, error) {
 
 	pool, err := pgxpool.NewWithConfig(ctx, config)
 	if err != nil {
-		return nil, fmt.Errorf("Error creating connection: %w", err)
+		return nil, fmt.Errorf("error creating connection: %w", err)
 	}
 
 	return pool, nil

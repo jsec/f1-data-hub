@@ -18,14 +18,14 @@ type status struct {
 func (i Imager) loadStatuses(ctx context.Context, tx pgx.Tx) error {
 	file, err := os.OpenFile("data/status.csv", os.O_RDONLY, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("Error opening status CSV file: %w", err)
+		return fmt.Errorf("error opening status CSV file: %w", err)
 	}
 	defer file.Close()
 
 	var statuses []*status
 
 	if err = gocsv.UnmarshalFile(file, &statuses); err != nil {
-		return fmt.Errorf("Error marshaling status CSV file: %w", err)
+		return fmt.Errorf("error marshaling status CSV file: %w", err)
 	}
 
 	records := []database.SaveStatusesParams{}
@@ -39,7 +39,7 @@ func (i Imager) loadStatuses(ctx context.Context, tx pgx.Tx) error {
 
 	_, err = i.db.WithTx(tx).SaveStatuses(ctx, records)
 	if err != nil {
-		return fmt.Errorf("Error saving statuses: %w", err)
+		return fmt.Errorf("error saving statuses: %w", err)
 	}
 
 	fmt.Println("[Statuses] seeding complete")
