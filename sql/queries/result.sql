@@ -1,0 +1,79 @@
+-- name: SaveResults :copyfrom
+INSERT INTO results (
+    id,
+    race_id,
+    driver_id,
+    constructor_id,
+    number,
+    grid,
+    position,
+    pos_text,
+    pos_order,
+    points,
+    laps,
+    time,
+    milliseconds,
+    fastest_lap,
+    rank,
+    fastest_lap_time,
+    fastest_lap_speed,
+    status_id
+)
+VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8,
+    $9,
+    $10,
+    $11,
+    $12,
+    $13,
+    $14,
+    $15,
+    $16,
+    $17,
+    $18
+);
+
+-- name: SaveSprintResults :copyfrom
+INSERT INTO sprint_results (
+    id,
+    race_id,
+    driver_id,
+    constructor_id,
+    number,
+    grid,
+    position,
+    pos_text,
+    pos_order,
+    points,
+    laps,
+    time,
+    milliseconds,
+    fastest_lap,
+    fastest_lap_time,
+    status_id
+)
+VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8,
+    $9,
+    $10,
+    $11,
+    $12,
+    $13,
+    $14,
+    $15,
+    $16
+);

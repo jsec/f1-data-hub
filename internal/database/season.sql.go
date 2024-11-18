@@ -7,6 +7,8 @@ package database
 
 import (
 	"context"
+
+	"github.com/shopspring/decimal"
 )
 
 const getDriverStandingsByYear = `-- name: GetDriverStandingsByYear :many
@@ -27,7 +29,7 @@ type GetDriverStandingsByYearRow struct {
 	DriverID  int32
 	FirstName string
 	LastName  string
-	Points    int64
+	Points    decimal.Decimal
 }
 
 func (q *Queries) GetDriverStandingsByYear(ctx context.Context, year int32) ([]GetDriverStandingsByYearRow, error) {
@@ -53,4 +55,9 @@ func (q *Queries) GetDriverStandingsByYear(ctx context.Context, year int32) ([]G
 		return nil, err
 	}
 	return items, nil
+}
+
+type SaveSeasonsParams struct {
+	Year int32
+	Url  string
 }

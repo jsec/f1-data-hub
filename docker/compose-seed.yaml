@@ -2,13 +2,13 @@ services:
   postgres:
     build:
       context: ./
-      dockerfile: ./Dockerfile.postgres
     restart: always
     shm_size: 128mb
+    container_name: f1db-seed
     environment:
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: f1db
+      POSTGRES_DB: ${DATABASE_NAME}
     ports:
       - 5432:5432
     healthcheck:
@@ -16,20 +16,3 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  mysql:
-    image: f1db/seed
-    command: "--default-authentication-plugin=mysql_native_password"
-    restart: always
-    environment:
-      MYSQL_USER: seed
-      MYSQL_PASSWORD: seed
-      MYSQL_DATABASE: f1db
-      MYSQL_ROOT_PASSWORD: root
-    ports:
-      - 3306:3306
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 10

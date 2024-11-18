@@ -10,12 +10,10 @@ tasks:
       - cmd: echo "Codegen complete"
         silent: true
 
-  db:dump:
-    dir: "{{.TASKFILE_DIR}}/sql/schema"
+  db:down:
+    dir: "{{.TASKFILE_DIR}}/docker"
     cmds:
-      - cmd: rm schema.sql
-        silent: true
-      - cmd: pg_dump -s -n f1db -d f1db -U $DATABASE_USER > schema.sql
+      - cmd: docker compose -f compose-dev.yaml down
 
   db:migrate:
     dir: "{{.TASKFILE_DIR}}/sql/schema"
@@ -29,49 +27,43 @@ tasks:
       - cmd: goose create {{.CLI_ARGS}} sql
         silent: true
 
+  db:migrate:down:
+    dir: "{{.TASKFILE_DIR}}/sql/schema"
+    cmds:
+      - cmd: goose down
+        silent: true
+
   db:push:
     cmds:
       - cmd: echo $CR_PAT | docker login ghcr.io -u jsec --password-stdin
         silent: true
       - cmd: docker push ghcr.io/jsec/f1db:latest
 
-  db:rollback:
-    dir: "{{.TASKFILE_DIR}}/sql/schema"
-    cmds:
-      - cmd: goose down
-        silent: true
-
-  db:seed:
+  db:up:
     dir: "{{.TASKFILE_DIR}}/docker"
     cmds:
-      - task: mysql:build
-      - cmd: docker compose -f compose-seed.yaml up --force-recreate --wait
-        silent: true
-      - cmd: docker run --rm -it --net=host --name pgloader dimitri/pgloader:latest pgloader mysql://seed:seed@host.docker.internal:3306/f1db postgresql://$DATABASE_USER:$DATABASE_PASSWORD@host.docker.internal:5432/f1db
-
-  db:seed:build:
-    dir: "{{.TASKFILE_DIR}}/docker"
-    cmds:
-      - cmd: docker build -f Dockerfile.mysql -t f1db/seed:latest --no-cache .
-
-  db:seed:down:
-    dir: "{{.TASKFILE_DIR}}/docker"
-    cmds:
-      - cmd: docker compose -f compose-seed.yaml down -v
-        silent: true
+      - cmd: docker compose -f compose-dev.yaml up --wait
 
   db:update:
     cmds:
       - task: db:migrate
       - task: db:codegen
 
-  dev:
+  image:up:
     dir: "{{.TASKFILE_DIR}}/docker"
     cmds:
-      - cmd: docker compose -f compose-dev.yaml up --wait
+      - cmd: docker compose -f compose-seed.yaml up --wait
+        silent: true
+      - task: db:migrate
 
-  dev:down:
+  image:down:
     dir: "{{.TASKFILE_DIR}}/docker"
     cmds:
-      - cmd: docker compose -f compose-dev.yaml down
+      - cmd: docker compose -f compose-seed.yaml down
+        silent: true
 
+  image:new:
+    cmds:
+      - task: image:up
+      - cmd: go run ./cmd/imager
+        silent: true
