@@ -32,7 +32,7 @@ type race struct {
 }
 
 func (i Imager) loadRaces(ctx context.Context, tx pgx.Tx) error {
-	file, err := os.OpenFile("data/races.csv", os.O_RDONLY, os.ModePerm)
+	file, err := os.OpenFile("data/races.csv", os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening races CSV file: %w", err)
 	}

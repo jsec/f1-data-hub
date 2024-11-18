@@ -20,7 +20,7 @@ type lapTime struct {
 }
 
 func (i Imager) loadLapTimes(ctx context.Context, tx pgx.Tx) error {
-	file, err := os.OpenFile("data/lap_times.csv", os.O_RDONLY, os.ModePerm)
+	file, err := os.OpenFile("data/lap_times.csv", os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening lap times CSV file: %w", err)
 	}

@@ -20,7 +20,7 @@ type constructor struct {
 }
 
 func (i Imager) loadConstructors(ctx context.Context, tx pgx.Tx) error {
-	file, err := os.OpenFile("data/constructors.csv", os.O_RDONLY, os.ModePerm)
+	file, err := os.OpenFile("data/constructors.csv", os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening constructors CSV file: %w", err)
 	}
@@ -61,7 +61,7 @@ type constructorResult struct {
 }
 
 func (i Imager) loadConstructorResults(ctx context.Context, tx pgx.Tx) error {
-	file, err := os.OpenFile("data/constructor_results.csv", os.O_RDONLY, os.ModePerm)
+	file, err := os.OpenFile("data/constructor_results.csv", os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening constructor results CSV file: %w", err)
 	}
@@ -105,7 +105,7 @@ type constructorStanding struct {
 }
 
 func (i Imager) loadConstructorStandings(ctx context.Context, tx pgx.Tx) error {
-	file, err := os.OpenFile("data/constructor_standings.csv", os.O_RDONLY, os.ModePerm)
+	file, err := os.OpenFile("data/constructor_standings.csv", os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening constructor standings CSV file: %w", err)
 	}

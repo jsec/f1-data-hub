@@ -21,7 +21,7 @@ type pitStop struct {
 }
 
 func (i Imager) loadPitStops(ctx context.Context, tx pgx.Tx) error {
-	file, err := os.OpenFile("data/pit_stops.csv", os.O_RDONLY, os.ModePerm)
+	file, err := os.OpenFile("data/pit_stops.csv", os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening pit stops CSV file: %w", err)
 	}

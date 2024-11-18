@@ -24,7 +24,7 @@ type circuit struct {
 }
 
 func (i Imager) loadCircuits(ctx context.Context, tx pgx.Tx) error {
-	file, err := os.OpenFile("data/circuits.csv", os.O_RDONLY, os.ModePerm)
+	file, err := os.OpenFile("data/circuits.csv", os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening circuits CSV file: %w", err)
 	}

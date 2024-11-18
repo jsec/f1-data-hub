@@ -23,7 +23,7 @@ type qualifying struct {
 }
 
 func (i Imager) loadQualifying(ctx context.Context, tx pgx.Tx) error {
-	file, err := os.OpenFile("data/qualifying.csv", os.O_RDONLY, os.ModePerm)
+	file, err := os.OpenFile("data/qualifying.csv", os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening qualifying CSV file: %w", err)
 	}

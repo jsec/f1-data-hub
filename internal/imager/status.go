@@ -16,7 +16,7 @@ type status struct {
 }
 
 func (i Imager) loadStatuses(ctx context.Context, tx pgx.Tx) error {
-	file, err := os.OpenFile("data/status.csv", os.O_RDONLY, os.ModePerm)
+	file, err := os.OpenFile("data/status.csv", os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening status CSV file: %w", err)
 	}

@@ -16,7 +16,7 @@ type season struct {
 }
 
 func (i Imager) loadSeasons(ctx context.Context, tx pgx.Tx) error {
-	file, err := os.OpenFile("data/seasons.csv", os.O_RDONLY, os.ModePerm)
+	file, err := os.OpenFile("data/seasons.csv", os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening seasons CSV file: %w", err)
 	}

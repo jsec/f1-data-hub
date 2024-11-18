@@ -24,7 +24,7 @@ type driver struct {
 }
 
 func (i Imager) loadDrivers(ctx context.Context, tx pgx.Tx) error {
-	file, err := os.OpenFile("data/drivers.csv", os.O_RDONLY, os.ModePerm)
+	file, err := os.OpenFile("data/drivers.csv", os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening driver CSV file: %w", err)
 	}
@@ -72,7 +72,7 @@ type driverStanding struct {
 }
 
 func (i Imager) loadDriverStandings(ctx context.Context, tx pgx.Tx) error {
-	file, err := os.OpenFile("data/driver_standings.csv", os.O_RDONLY, os.ModePerm)
+	file, err := os.OpenFile("data/driver_standings.csv", os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening driver standings CSV file: %w", err)
 	}

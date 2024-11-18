@@ -33,7 +33,7 @@ type result struct {
 }
 
 func (i Imager) loadResults(ctx context.Context, tx pgx.Tx) error {
-	file, err := os.OpenFile("data/results.csv", os.O_RDONLY, os.ModePerm)
+	file, err := os.OpenFile("data/results.csv", os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening results CSV file: %w", err)
 	}
@@ -101,7 +101,7 @@ type sprintResult struct {
 }
 
 func (i Imager) loadSprintResults(ctx context.Context, tx pgx.Tx) error {
-	file, err := os.OpenFile("data/sprint_results.csv", os.O_RDONLY, os.ModePerm)
+	file, err := os.OpenFile("data/sprint_results.csv", os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening sprint results CSV file: %w", err)
 	}
