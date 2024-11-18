@@ -1,9 +1,40 @@
 version: 2
 sql:
-  - schema: sql/schema.sql
+  - schema: sql/schema
     queries: sql/queries
     engine: postgresql
+    database:
+      uri: ${DATABASE_URL}
     gen:
       go:
         out: internal/database
         sql_package: pgx/v5
+        output_db_file_name: database.go
+        output_models_file_name: entities.sql.go
+        output_copyfrom_file_name: iterators.go
+        emit_pointers_for_null_types: true
+        overrides:
+          - db_type: "date"
+            go_type: "time.Time"
+          - db_type: "date"
+            nullable: true
+            go_type:
+              import: "time"
+              type: "Time"
+              pointer: true
+          - db_type: "pg_catalog.time"
+            go_type: "time.Time"
+          - db_type: "pg_catalog.time"
+            nullable: true
+            go_type:
+              import: "time"
+              type: "Time"
+              pointer: true
+          - db_type: "numeric"
+            go_type: "github.com/shopspring/decimal.Decimal"
+          - db_type: "numeric"
+            nullable: true
+            go_type:
+              import: "github.com/shopspring/decimal"
+              type: "Decimal"
+              pointer: true

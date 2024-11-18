@@ -3,8 +3,11 @@ module github.com/jsec/f1-data-hub
 go 1.23.1
 
 require (
+	github.com/gocarina/gocsv v0.0.0-20240520201108-78e41c74b4b1
+	github.com/jackc/pgx-shopspring-decimal v0.0.0-20220624020537-1d36b5a1853e
 	github.com/jackc/pgx/v5 v5.7.1
 	github.com/labstack/echo v3.3.10+incompatible
+	github.com/shopspring/decimal v1.4.0
 )
 
 require (
