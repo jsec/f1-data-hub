@@ -35,6 +35,7 @@ tasks:
 
   db:push:
     cmds:
+      - cmd: docker commit -a "Jarrod Seccombe <jarrod.seccombe@icloud.com>" $(docker ps -aqf "name=f1db-seed") ghcr.io/jsec/f1db
       - cmd: echo $CR_PAT | docker login ghcr.io -u jsec --password-stdin
         silent: true
       - cmd: docker push ghcr.io/jsec/f1db:latest
@@ -48,6 +49,10 @@ tasks:
     cmds:
       - task: db:migrate
       - task: db:codegen
+
+  dev:
+    cmds:
+      - task: db:up
 
   image:up:
     dir: "{{.TASKFILE_DIR}}/docker"
@@ -67,3 +72,5 @@ tasks:
       - task: image:up
       - cmd: go run ./cmd/imager
         silent: true
+      - task: db:push
+      - task: image:down
