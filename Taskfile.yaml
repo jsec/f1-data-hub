@@ -53,6 +53,7 @@ tasks:
   dev:
     cmds:
       - task: db:up
+      - cmd: air
 
   image:up:
     dir: "{{.TASKFILE_DIR}}/docker"
