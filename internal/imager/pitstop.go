@@ -47,8 +47,7 @@ func (i Imager) loadPitStops(ctx context.Context, tx pgx.Tx) error {
 		})
 	}
 
-	_, err = i.db.WithTx(tx).SavePitStops(ctx, records)
-	if err != nil {
+	if err = i.pitStopService.SeedPitStops(ctx, tx, records); err != nil {
 		return fmt.Errorf("error saving pit stops: %w", err)
 	}
 

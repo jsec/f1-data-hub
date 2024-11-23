@@ -3,21 +3,31 @@ package imager
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jsec/f1-data-hub/internal/database"
+	"github.com/jsec/f1-data-hub/internal/services"
 )
 
 type Imager struct {
-	db *database.Queries
+	circuitService     services.CircuitService
+	constructorService services.ConstructorService
+	driverService      services.DriverService
+	lapTimeService     services.LapTimeService
+	pitStopService     services.PitStopService
+	qualifyingService  services.QualifyingService
+	raceService        services.RaceService
+	resultService      services.ResultsService
+	seasonService      services.SeasonService
+	statusService      services.StatusService
 }
 
 func Run(ctx context.Context) error {
 	pool, err := database.Connect(ctx)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("error acquiring database connection: %w", err)
 	}
+	defer pool.Close()
 
 	tx, err := pool.Begin(ctx)
 	if err != nil {
@@ -25,8 +35,19 @@ func Run(ctx context.Context) error {
 	}
 	defer tx.Rollback(ctx)
 
+	db := database.New(pool)
+
 	imager := Imager{
-		db: database.New(pool),
+		circuitService:     services.NewCircuitService(db),
+		constructorService: services.NewConstructorService(db),
+		driverService:      services.NewDriverService(db),
+		lapTimeService:     services.NewLapTimeService(db),
+		pitStopService:     services.NewPitStopService(db),
+		qualifyingService:  services.NewQualifyingService(db),
+		raceService:        services.NewRaceService(db),
+		resultService:      services.NewResultsService(db),
+		seasonService:      services.NewSeasonService(db),
+		statusService:      services.NewStatusService(db),
 	}
 
 	if err = imager.Seed(ctx, tx); err != nil {

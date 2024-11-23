@@ -45,8 +45,7 @@ func (i Imager) loadLapTimes(ctx context.Context, tx pgx.Tx) error {
 		})
 	}
 
-	_, err = i.db.WithTx(tx).SaveLapTimes(ctx, records)
-	if err != nil {
+	if err = i.lapTimeService.SeedLapTimes(ctx, tx, records); err != nil {
 		return fmt.Errorf("error saving lap times: %w", err)
 	}
 

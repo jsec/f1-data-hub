@@ -37,8 +37,7 @@ func (i Imager) loadStatuses(ctx context.Context, tx pgx.Tx) error {
 		})
 	}
 
-	_, err = i.db.WithTx(tx).SaveStatuses(ctx, records)
-	if err != nil {
+	if err = i.statusService.SeedStatuses(ctx, tx, records); err != nil {
 		return fmt.Errorf("error saving statuses: %w", err)
 	}
 

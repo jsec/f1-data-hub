@@ -44,8 +44,7 @@ func (i Imager) loadConstructors(ctx context.Context, tx pgx.Tx) error {
 		})
 	}
 
-	_, err = i.db.WithTx(tx).SaveConstructors(ctx, records)
-	if err != nil {
+	if err = i.constructorService.SeedConstructors(ctx, tx, records); err != nil {
 		return fmt.Errorf("error saving constructors: %w", err)
 	}
 
@@ -85,8 +84,7 @@ func (i Imager) loadConstructorResults(ctx context.Context, tx pgx.Tx) error {
 		})
 	}
 
-	_, err = i.db.WithTx(tx).SaveConstructorResults(ctx, records)
-	if err != nil {
+	if err = i.constructorService.SeedConstructorResults(ctx, tx, records); err != nil {
 		return fmt.Errorf("error saving constructor results: %w", err)
 	}
 
@@ -131,8 +129,7 @@ func (i Imager) loadConstructorStandings(ctx context.Context, tx pgx.Tx) error {
 		})
 	}
 
-	_, err = i.db.WithTx(tx).SaveConstructorStandings(ctx, records)
-	if err != nil {
+	if err = i.constructorService.SeedConstructorStandings(ctx, tx, records); err != nil {
 		return fmt.Errorf("error saving constructor standings: %w", err)
 	}
 

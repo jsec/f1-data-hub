@@ -69,8 +69,7 @@ func (i Imager) loadRaces(ctx context.Context, tx pgx.Tx) error {
 		})
 	}
 
-	_, err = i.db.WithTx(tx).SaveRaces(ctx, records)
-	if err != nil {
+	if err = i.raceService.SeedRaces(ctx, tx, records); err != nil {
 		return fmt.Errorf("error saving races: %w", err)
 	}
 

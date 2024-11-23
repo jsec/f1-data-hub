@@ -52,8 +52,7 @@ func (i Imager) loadCircuits(ctx context.Context, tx pgx.Tx) error {
 		})
 	}
 
-	_, err = i.db.WithTx(tx).SaveCircuits(ctx, records)
-	if err != nil {
+	if err = i.circuitService.SeedCircuits(ctx, tx, records); err != nil {
 		return fmt.Errorf("error saving circuits: %w", err)
 	}
 

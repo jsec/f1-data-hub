@@ -37,8 +37,7 @@ func (i Imager) loadSeasons(ctx context.Context, tx pgx.Tx) error {
 		})
 	}
 
-	_, err = i.db.WithTx(tx).SaveSeasons(ctx, records)
-	if err != nil {
+	if err = i.seasonService.SeedSeasons(ctx, tx, records); err != nil {
 		return fmt.Errorf("error saving seasons: %w", err)
 	}
 

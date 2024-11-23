@@ -51,8 +51,7 @@ func (i Imager) loadQualifying(ctx context.Context, tx pgx.Tx) error {
 		})
 	}
 
-	_, err = i.db.WithTx(tx).SaveQualifyingResults(ctx, records)
-	if err != nil {
+	if err = i.qualifyingService.SeedQualifyingResults(ctx, tx, records); err != nil {
 		return fmt.Errorf("error saving qualifying results: %w", err)
 	}
 

@@ -70,8 +70,7 @@ func (i Imager) loadResults(ctx context.Context, tx pgx.Tx) error {
 		})
 	}
 
-	_, err = i.db.WithTx(tx).SaveResults(ctx, records)
-	if err != nil {
+	if err = i.resultService.SeedResults(ctx, tx, records); err != nil {
 		return fmt.Errorf("error saving results: %w", err)
 	}
 
@@ -136,8 +135,7 @@ func (i Imager) loadSprintResults(ctx context.Context, tx pgx.Tx) error {
 		})
 	}
 
-	_, err = i.db.WithTx(tx).SaveSprintResults(ctx, records)
-	if err != nil {
+	if err = i.resultService.SeedSprintResults(ctx, tx, records); err != nil {
 		return fmt.Errorf("error saving sprint results: %w", err)
 	}
 

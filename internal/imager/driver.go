@@ -52,8 +52,7 @@ func (i Imager) loadDrivers(ctx context.Context, tx pgx.Tx) error {
 		})
 	}
 
-	_, err = i.db.WithTx(tx).SaveDrivers(ctx, records)
-	if err != nil {
+	if err = i.driverService.SeedDrivers(ctx, tx, records); err != nil {
 		return fmt.Errorf("error saving drivers: %w", err)
 	}
 
@@ -98,8 +97,7 @@ func (i Imager) loadDriverStandings(ctx context.Context, tx pgx.Tx) error {
 		})
 	}
 
-	_, err = i.db.WithTx(tx).SaveDriverStandings(ctx, records)
-	if err != nil {
+	if err = i.driverService.SeedDriverStandings(ctx, tx, records); err != nil {
 		return fmt.Errorf("error saving driver standings: %w", err)
 	}
 
