@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jsec/f1-data-hub/internal/config"
 	"github.com/jsec/f1-data-hub/internal/database"
 )
 
@@ -16,11 +16,9 @@ type Server struct {
 	db   *database.Queries
 }
 
-func createServer(pool *pgxpool.Pool) *http.Server {
-	// TODO: move this to an env variable
-	port := 8080
+func createServer(pool *pgxpool.Pool, cfg config.Config) *http.Server {
 	srv := &Server{
-		port: port,
+		port: cfg.Port,
 		db:   database.New(pool),
 	}
 
@@ -36,13 +34,18 @@ func createServer(pool *pgxpool.Pool) *http.Server {
 }
 
 func Run(ctx context.Context) error {
-	pool, err := pgxpool.New(ctx, os.Getenv("DATABASE_URL"))
+	cfg, err := config.New()
+	if err != nil {
+		return fmt.Errorf("error parsing configuration: %w", err)
+	}
+
+	pool, err := pgxpool.New(ctx, cfg.DatabaseURL)
 	if err != nil {
 		return fmt.Errorf("error getting database connection: %w", err)
 	}
 	defer pool.Close()
 
-	server := createServer(pool)
+	server := createServer(pool, cfg)
 
 	err = server.ListenAndServe()
 	if err != nil {
