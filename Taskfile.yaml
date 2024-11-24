@@ -74,10 +74,10 @@ tasks:
 
   image:new:
     cmds:
-      - cmd: rm -r data
-        silent: true
       - task: image:up
       - cmd: go run ./cmd/imager
         silent: true
       - task: db:push
       - task: image:down
+      - cmd: rm -r data
+        silent: true
