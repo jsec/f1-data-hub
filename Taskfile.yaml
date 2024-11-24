@@ -36,14 +36,17 @@ tasks:
   db:push:
     cmds:
       - cmd: docker commit -a "Jarrod Seccombe <jarrod.seccombe@icloud.com>" $(docker ps -aqf "name=f1db-seed") ghcr.io/jsec/f1db
+        silent: true
       - cmd: echo $CR_PAT | docker login ghcr.io -u jsec --password-stdin
         silent: true
       - cmd: docker push ghcr.io/jsec/f1db:latest
+        silent: true
 
   db:up:
     dir: "{{.TASKFILE_DIR}}/docker"
     cmds:
       - cmd: docker compose -f compose-dev.yaml up --wait
+        silent: true
 
   db:update:
     cmds:
@@ -61,6 +64,7 @@ tasks:
       - cmd: docker compose -f compose-seed.yaml up --wait
         silent: true
       - task: db:migrate
+        silent: true
 
   image:down:
     dir: "{{.TASKFILE_DIR}}/docker"
@@ -70,6 +74,8 @@ tasks:
 
   image:new:
     cmds:
+      - cmd: rm -r data
+        silent: true
       - task: image:up
       - cmd: go run ./cmd/imager
         silent: true

@@ -10,28 +10,40 @@ import (
 
 const zipName = "seed.zip"
 
-func FetchSeedData() error {
+func (i imager) downloadData() error {
+	spinner := i.spinners.AddSpinner("Fetching data from ergast")
+
 	out, err := os.Create(zipName)
 	if err != nil {
+		spinner.Error()
 		return fmt.Errorf("error creating seed file: %w", err)
 	}
 	defer out.Close()
 
 	resp, err := http.Get("http://ergast.com/downloads/f1db_csv.zip")
 	if err != nil {
+		spinner.Error()
 		return fmt.Errorf("error fetching seed data: %w", err)
 	}
 	defer resp.Body.Close()
 
 	_, err = io.Copy(out, resp.Body)
 	if err != nil {
+		spinner.Error()
 		return fmt.Errorf("error saving seed data: %w", err)
 	}
 
-	return UnzipSeedData()
+	err = unzipFiles()
+	if err != nil {
+		spinner.Error()
+		return err
+	}
+
+	spinner.Complete()
+	return nil
 }
 
-func UnzipSeedData() error {
+func unzipFiles() error {
 	r, err := zip.OpenReader(zipName)
 	if err != nil {
 		return fmt.Errorf("error opening zipfile: %w", err)

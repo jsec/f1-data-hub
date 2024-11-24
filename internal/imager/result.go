@@ -32,9 +32,12 @@ type result struct {
 	StatusID        int32           `csv:"statusId"`
 }
 
-func (i Imager) loadResults(ctx context.Context, tx pgx.Tx) error {
+func (i imager) loadResults(ctx context.Context, tx pgx.Tx) error {
+	spinner := i.spinners.AddSpinner("Seeding results")
+
 	file, err := os.OpenFile("data/results.csv", os.O_RDONLY, 0600)
 	if err != nil {
+		spinner.Error()
 		return fmt.Errorf("error opening results CSV file: %w", err)
 	}
 	defer file.Close()
@@ -42,6 +45,7 @@ func (i Imager) loadResults(ctx context.Context, tx pgx.Tx) error {
 	var results []*result
 
 	if err = gocsv.UnmarshalFile(file, &results); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error marshaling results CSV file: %w", err)
 	}
 
@@ -71,10 +75,11 @@ func (i Imager) loadResults(ctx context.Context, tx pgx.Tx) error {
 	}
 
 	if err = i.resultService.SeedResults(ctx, tx, records); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error saving results: %w", err)
 	}
 
-	fmt.Println("[Results] seeding complete")
+	spinner.Complete()
 	return nil
 }
 
@@ -99,9 +104,12 @@ type sprintResult struct {
 	StatusID        int32           `csv:"statusId"`
 }
 
-func (i Imager) loadSprintResults(ctx context.Context, tx pgx.Tx) error {
+func (i imager) loadSprintResults(ctx context.Context, tx pgx.Tx) error {
+	spinner := i.spinners.AddSpinner("Seeding sprint results")
+
 	file, err := os.OpenFile("data/sprint_results.csv", os.O_RDONLY, 0600)
 	if err != nil {
+		spinner.Error()
 		return fmt.Errorf("error opening sprint results CSV file: %w", err)
 	}
 	defer file.Close()
@@ -109,6 +117,7 @@ func (i Imager) loadSprintResults(ctx context.Context, tx pgx.Tx) error {
 	var results []*sprintResult
 
 	if err = gocsv.UnmarshalFile(file, &results); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error marshaling sprint results CSV file: %w", err)
 	}
 
@@ -136,9 +145,10 @@ func (i Imager) loadSprintResults(ctx context.Context, tx pgx.Tx) error {
 	}
 
 	if err = i.resultService.SeedSprintResults(ctx, tx, records); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error saving sprint results: %w", err)
 	}
 
-	fmt.Println("[Sprint Results] seeding complete")
+	spinner.Complete()
 	return nil
 }

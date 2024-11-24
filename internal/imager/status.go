@@ -15,9 +15,12 @@ type status struct {
 	Status string `csv:"status"`
 }
 
-func (i Imager) loadStatuses(ctx context.Context, tx pgx.Tx) error {
+func (i imager) loadStatuses(ctx context.Context, tx pgx.Tx) error {
+	spinner := i.spinners.AddSpinner("Seeding statuses")
+
 	file, err := os.OpenFile("data/status.csv", os.O_RDONLY, 0600)
 	if err != nil {
+		spinner.Error()
 		return fmt.Errorf("error opening status CSV file: %w", err)
 	}
 	defer file.Close()
@@ -25,6 +28,7 @@ func (i Imager) loadStatuses(ctx context.Context, tx pgx.Tx) error {
 	var statuses []*status
 
 	if err = gocsv.UnmarshalFile(file, &statuses); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error marshaling status CSV file: %w", err)
 	}
 
@@ -38,9 +42,10 @@ func (i Imager) loadStatuses(ctx context.Context, tx pgx.Tx) error {
 	}
 
 	if err = i.statusService.SeedStatuses(ctx, tx, records); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error saving statuses: %w", err)
 	}
 
-	fmt.Println("[Statuses] seeding complete")
+	spinner.Complete()
 	return nil
 }

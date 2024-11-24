@@ -22,7 +22,9 @@ type qualifying struct {
 	Q3            optionalString `csv:"q3"`
 }
 
-func (i Imager) loadQualifying(ctx context.Context, tx pgx.Tx) error {
+func (i imager) loadQualifying(ctx context.Context, tx pgx.Tx) error {
+	spinner := i.spinners.AddSpinner("Seeding qualifying results")
+
 	file, err := os.OpenFile("data/qualifying.csv", os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening qualifying CSV file: %w", err)
@@ -32,6 +34,7 @@ func (i Imager) loadQualifying(ctx context.Context, tx pgx.Tx) error {
 	var results []*qualifying
 
 	if err = gocsv.UnmarshalFile(file, &results); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error marshaling qualifying CSV file: %w", err)
 	}
 
@@ -52,9 +55,10 @@ func (i Imager) loadQualifying(ctx context.Context, tx pgx.Tx) error {
 	}
 
 	if err = i.qualifyingService.SeedQualifyingResults(ctx, tx, records); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error saving qualifying results: %w", err)
 	}
 
-	fmt.Println("[Qualifying] seeding complete")
+	spinner.Complete()
 	return nil
 }

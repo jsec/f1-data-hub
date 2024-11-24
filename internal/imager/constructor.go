@@ -19,9 +19,12 @@ type constructor struct {
 	URL         string `csv:"url"`
 }
 
-func (i Imager) loadConstructors(ctx context.Context, tx pgx.Tx) error {
+func (i imager) loadConstructors(ctx context.Context, tx pgx.Tx) error {
+	spinner := i.spinners.AddSpinner("Seeding constructors")
+
 	file, err := os.OpenFile("data/constructors.csv", os.O_RDONLY, 0600)
 	if err != nil {
+		spinner.Error()
 		return fmt.Errorf("error opening constructors CSV file: %w", err)
 	}
 	defer file.Close()
@@ -29,6 +32,7 @@ func (i Imager) loadConstructors(ctx context.Context, tx pgx.Tx) error {
 	var constructors []*constructor
 
 	if err = gocsv.UnmarshalFile(file, &constructors); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error marshaling constructors CSV file: %w", err)
 	}
 
@@ -45,9 +49,11 @@ func (i Imager) loadConstructors(ctx context.Context, tx pgx.Tx) error {
 	}
 
 	if err = i.constructorService.SeedConstructors(ctx, tx, records); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error saving constructors: %w", err)
 	}
 
+	spinner.Complete()
 	return nil
 }
 
@@ -59,9 +65,12 @@ type constructorResult struct {
 	Status        optionalString  `csv:"status"`
 }
 
-func (i Imager) loadConstructorResults(ctx context.Context, tx pgx.Tx) error {
+func (i imager) loadConstructorResults(ctx context.Context, tx pgx.Tx) error {
+	spinner := i.spinners.AddSpinner("Seeding constructors")
+
 	file, err := os.OpenFile("data/constructor_results.csv", os.O_RDONLY, 0600)
 	if err != nil {
+		spinner.Error()
 		return fmt.Errorf("error opening constructor results CSV file: %w", err)
 	}
 	defer file.Close()
@@ -69,6 +78,7 @@ func (i Imager) loadConstructorResults(ctx context.Context, tx pgx.Tx) error {
 	var results []*constructorResult
 
 	if err = gocsv.UnmarshalFile(file, &results); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error marshaling constructor results CSV file: %w", err)
 	}
 
@@ -85,10 +95,11 @@ func (i Imager) loadConstructorResults(ctx context.Context, tx pgx.Tx) error {
 	}
 
 	if err = i.constructorService.SeedConstructorResults(ctx, tx, records); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error saving constructor results: %w", err)
 	}
 
-	fmt.Println("[Constructor Results] seeding complete")
+	spinner.Complete()
 	return nil
 }
 
@@ -102,9 +113,12 @@ type constructorStanding struct {
 	Wins          int32           `csv:"wins"`
 }
 
-func (i Imager) loadConstructorStandings(ctx context.Context, tx pgx.Tx) error {
+func (i imager) loadConstructorStandings(ctx context.Context, tx pgx.Tx) error {
+	spinner := i.spinners.AddSpinner("Seeding constructor standings")
+
 	file, err := os.OpenFile("data/constructor_standings.csv", os.O_RDONLY, 0600)
 	if err != nil {
+		spinner.Error()
 		return fmt.Errorf("error opening constructor standings CSV file: %w", err)
 	}
 	defer file.Close()
@@ -112,6 +126,7 @@ func (i Imager) loadConstructorStandings(ctx context.Context, tx pgx.Tx) error {
 	var standings []*constructorStanding
 
 	if err = gocsv.UnmarshalFile(file, &standings); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error marshaling constructor standings CSV file: %w", err)
 	}
 
@@ -130,9 +145,10 @@ func (i Imager) loadConstructorStandings(ctx context.Context, tx pgx.Tx) error {
 	}
 
 	if err = i.constructorService.SeedConstructorStandings(ctx, tx, records); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error saving constructor standings: %w", err)
 	}
 
-	fmt.Println("[Constructor Standings] seeding complete")
+	spinner.Complete()
 	return nil
 }

@@ -23,7 +23,9 @@ type circuit struct {
 	URL       string          `csv:"url"`
 }
 
-func (i Imager) loadCircuits(ctx context.Context, tx pgx.Tx) error {
+func (i imager) loadCircuits(ctx context.Context, tx pgx.Tx) error {
+	spinner := i.spinners.AddSpinner("Seeding circuits")
+
 	file, err := os.OpenFile("data/circuits.csv", os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening circuits CSV file: %w", err)
@@ -33,6 +35,7 @@ func (i Imager) loadCircuits(ctx context.Context, tx pgx.Tx) error {
 	var circuits []*circuit
 
 	if err = gocsv.UnmarshalFile(file, &circuits); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error marshaling circuits CSV file: %w", err)
 	}
 
@@ -53,9 +56,10 @@ func (i Imager) loadCircuits(ctx context.Context, tx pgx.Tx) error {
 	}
 
 	if err = i.circuitService.SeedCircuits(ctx, tx, records); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error saving circuits: %w", err)
 	}
 
-	fmt.Println("[Circuits] seeding complete")
+	spinner.Complete()
 	return nil
 }

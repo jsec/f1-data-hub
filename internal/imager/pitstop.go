@@ -20,9 +20,12 @@ type pitStop struct {
 	Milliseconds int32    `csv:"milliseconds"`
 }
 
-func (i Imager) loadPitStops(ctx context.Context, tx pgx.Tx) error {
+func (i imager) loadPitStops(ctx context.Context, tx pgx.Tx) error {
+	spinner := i.spinners.AddSpinner("Seeding pit stops")
+
 	file, err := os.OpenFile("data/pit_stops.csv", os.O_RDONLY, 0600)
 	if err != nil {
+		spinner.Error()
 		return fmt.Errorf("error opening pit stops CSV file: %w", err)
 	}
 	defer file.Close()
@@ -30,6 +33,7 @@ func (i Imager) loadPitStops(ctx context.Context, tx pgx.Tx) error {
 	var pitStops []*pitStop
 
 	if err = gocsv.UnmarshalFile(file, &pitStops); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error marshaling pit stops CSV file: %w", err)
 	}
 
@@ -48,9 +52,10 @@ func (i Imager) loadPitStops(ctx context.Context, tx pgx.Tx) error {
 	}
 
 	if err = i.pitStopService.SeedPitStops(ctx, tx, records); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error saving pit stops: %w", err)
 	}
 
-	fmt.Println("[Pit Stops] seeding complete")
+	spinner.Complete()
 	return nil
 }

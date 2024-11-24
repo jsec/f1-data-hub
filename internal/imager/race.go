@@ -31,9 +31,12 @@ type race struct {
 	SprintTime optionalTimeOnly `csv:"sprint_time"`
 }
 
-func (i Imager) loadRaces(ctx context.Context, tx pgx.Tx) error {
+func (i imager) loadRaces(ctx context.Context, tx pgx.Tx) error {
+	spinner := i.spinners.AddSpinner("Seeding races")
+
 	file, err := os.OpenFile("data/races.csv", os.O_RDONLY, 0600)
 	if err != nil {
+		spinner.Error()
 		return fmt.Errorf("error opening races CSV file: %w", err)
 	}
 	defer file.Close()
@@ -41,6 +44,7 @@ func (i Imager) loadRaces(ctx context.Context, tx pgx.Tx) error {
 	var races []*race
 
 	if err = gocsv.UnmarshalFile(file, &races); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error marshaling races CSV file: %w", err)
 	}
 
@@ -70,9 +74,10 @@ func (i Imager) loadRaces(ctx context.Context, tx pgx.Tx) error {
 	}
 
 	if err = i.raceService.SeedRaces(ctx, tx, records); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error saving races: %w", err)
 	}
 
-	fmt.Println("[Races] seeding complete")
+	spinner.Complete()
 	return nil
 }

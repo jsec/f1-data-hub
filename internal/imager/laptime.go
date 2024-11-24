@@ -19,9 +19,12 @@ type lapTime struct {
 	Milliseconds int32  `csv:"milliseconds"`
 }
 
-func (i Imager) loadLapTimes(ctx context.Context, tx pgx.Tx) error {
+func (i imager) loadLapTimes(ctx context.Context, tx pgx.Tx) error {
+	spinner := i.spinners.AddSpinner("Seeding lap times")
+
 	file, err := os.OpenFile("data/lap_times.csv", os.O_RDONLY, 0600)
 	if err != nil {
+		spinner.Error()
 		return fmt.Errorf("error opening lap times CSV file: %w", err)
 	}
 	defer file.Close()
@@ -29,6 +32,7 @@ func (i Imager) loadLapTimes(ctx context.Context, tx pgx.Tx) error {
 	var lapTimes []*lapTime
 
 	if err = gocsv.UnmarshalFile(file, &lapTimes); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error marshaling lap times CSV file: %w", err)
 	}
 
@@ -46,9 +50,10 @@ func (i Imager) loadLapTimes(ctx context.Context, tx pgx.Tx) error {
 	}
 
 	if err = i.lapTimeService.SeedLapTimes(ctx, tx, records); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error saving lap times: %w", err)
 	}
 
-	fmt.Println("[Lap Times] seeding complete")
+	spinner.Complete()
 	return nil
 }

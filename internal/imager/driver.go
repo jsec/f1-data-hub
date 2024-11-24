@@ -23,7 +23,7 @@ type driver struct {
 	URL         string         `csv:"url"`
 }
 
-func (i Imager) loadDrivers(ctx context.Context, tx pgx.Tx) error {
+func (i imager) loadDrivers(ctx context.Context, tx pgx.Tx) error {
 	file, err := os.OpenFile("data/drivers.csv", os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening driver CSV file: %w", err)
@@ -70,9 +70,12 @@ type driverStanding struct {
 	Wins         int32           `csv:"wins"`
 }
 
-func (i Imager) loadDriverStandings(ctx context.Context, tx pgx.Tx) error {
+func (i imager) loadDriverStandings(ctx context.Context, tx pgx.Tx) error {
+	spinner := i.spinners.AddSpinner("Seeding drivers")
+
 	file, err := os.OpenFile("data/driver_standings.csv", os.O_RDONLY, 0600)
 	if err != nil {
+		spinner.Error()
 		return fmt.Errorf("error opening driver standings CSV file: %w", err)
 	}
 	defer file.Close()
@@ -80,6 +83,7 @@ func (i Imager) loadDriverStandings(ctx context.Context, tx pgx.Tx) error {
 	var standings []*driverStanding
 
 	if err = gocsv.UnmarshalFile(file, &standings); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error marshaling driver standings CSV file: %w", err)
 	}
 
@@ -98,9 +102,10 @@ func (i Imager) loadDriverStandings(ctx context.Context, tx pgx.Tx) error {
 	}
 
 	if err = i.driverService.SeedDriverStandings(ctx, tx, records); err != nil {
+		spinner.Error()
 		return fmt.Errorf("error saving driver standings: %w", err)
 	}
 
-	fmt.Println("[Driver Standings] seeding complete")
+	spinner.Complete()
 	return nil
 }

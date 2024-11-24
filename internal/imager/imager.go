@@ -2,14 +2,15 @@ package imager
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/chelnak/ysmrr"
 	"github.com/jackc/pgx/v5"
 	"github.com/jsec/f1-data-hub/internal/database"
 	"github.com/jsec/f1-data-hub/internal/services"
 )
 
-type Imager struct {
+type imager struct {
+	spinners           ysmrr.SpinnerManager
 	circuitService     services.CircuitService
 	constructorService services.ConstructorService
 	driverService      services.DriverService
@@ -22,22 +23,9 @@ type Imager struct {
 	statusService      services.StatusService
 }
 
-func Run(ctx context.Context) error {
-	pool, err := database.Connect(ctx)
-	if err != nil {
-		return fmt.Errorf("error acquiring database connection: %w", err)
-	}
-	defer pool.Close()
-
-	tx, err := pool.Begin(ctx)
-	if err != nil {
-		return fmt.Errorf("error acquiring transaction: %w", err)
-	}
-	defer tx.Rollback(ctx)
-
-	db := database.New(pool)
-
-	imager := Imager{
+func newImager(db *database.Queries) imager {
+	return imager{
+		spinners:           ysmrr.NewSpinnerManager(),
 		circuitService:     services.NewCircuitService(db),
 		constructorService: services.NewConstructorService(db),
 		driverService:      services.NewDriverService(db),
@@ -49,19 +37,16 @@ func Run(ctx context.Context) error {
 		seasonService:      services.NewSeasonService(db),
 		statusService:      services.NewStatusService(db),
 	}
-
-	if err = imager.Seed(ctx, tx); err != nil {
-		return err
-	}
-
-	if err = tx.Commit(ctx); err != nil {
-		return err
-	}
-
-	return nil
 }
 
-func (i Imager) Seed(ctx context.Context, tx pgx.Tx) error {
+func (i imager) seed(ctx context.Context, tx pgx.Tx) error {
+	i.spinners.Start()
+
+	if err := i.downloadData(); err != nil {
+		i.spinners.Stop()
+		return err
+	}
+
 	loaders := []func(ctx context.Context, tx pgx.Tx) error{
 		i.loadSeasons,
 		i.loadStatuses,
@@ -82,9 +67,11 @@ func (i Imager) Seed(ctx context.Context, tx pgx.Tx) error {
 	for _, loader := range loaders {
 		err := loader(ctx, tx)
 		if err != nil {
+			i.spinners.Stop()
 			return err
 		}
 	}
 
+	i.spinners.Stop()
 	return nil
 }
