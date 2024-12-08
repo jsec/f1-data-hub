@@ -1,24 +1,20 @@
 package server
 
 import (
-	"log"
 	"net/http"
 	"strconv"
-
-	"github.com/labstack/echo"
 )
 
-func (s *Server) driverStandingsByYearHandler(c echo.Context) error {
-	year, err := strconv.Atoi(c.Param("year"))
+func (s *Server) driverStandingsByYearHandler(w http.ResponseWriter, r *http.Request) {
+	year, err := strconv.Atoi(r.PathValue("year"))
 	if err != nil {
-		return c.String(http.StatusBadRequest, "Invalid year")
+		s.badRequest(w, "Invalid year")
 	}
 
-	standings, err := s.db.GetDriverStandingsByYear(c.Request().Context(), int32(year))
+	standings, err := s.db.GetDriverStandingsByYear(r.Context(), int32(year))
 	if err != nil {
-		// TODO: build out error handling
-		log.Fatal("Things went bonk:", err)
+		s.httpError(w, http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, standings)
+	s.respond(w, http.StatusOK, standings)
 }
