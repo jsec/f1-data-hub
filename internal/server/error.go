@@ -13,10 +13,6 @@ func (s *Server) badRequest(w http.ResponseWriter, msg string) {
 	s.httpError(w, http.StatusBadRequest, msg)
 }
 
-func (s *Server) notFound(w http.ResponseWriter, msg string) {
-	s.httpError(w, http.StatusNotFound, msg)
-}
-
 func (s *Server) httpError(w http.ResponseWriter, code int, msg string) {
 	response := response{
 		Error: msg,
@@ -30,5 +26,5 @@ func (s *Server) httpError(w http.ResponseWriter, code int, msg string) {
 
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(code)
-	w.Write(res)
+	_, _ = w.Write(res)
 }
