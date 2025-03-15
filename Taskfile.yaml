@@ -15,33 +15,6 @@ tasks:
     cmds:
       - cmd: docker compose -f compose-dev.yaml down
 
-  db:migrate:
-    dir: "{{.TASKFILE_DIR}}/sql/schema"
-    cmds:
-      - cmd: goose up
-        silent: true
-
-  db:migrate:create:
-    dir: "{{.TASKFILE_DIR}}/sql/schema"
-    cmds:
-      - cmd: goose create {{.CLI_ARGS}} sql
-        silent: true
-
-  db:migrate:down:
-    dir: "{{.TASKFILE_DIR}}/sql/schema"
-    cmds:
-      - cmd: goose down
-        silent: true
-
-  db:push:
-    cmds:
-      - cmd: docker commit -a "Jarrod Seccombe <jarrod.seccombe@icloud.com>" $(docker ps -aqf "name=f1db-seed") ghcr.io/jsec/f1db
-        silent: true
-      - cmd: echo $CR_PAT | docker login ghcr.io -u jsec --password-stdin
-        silent: true
-      - cmd: docker push ghcr.io/jsec/f1db:latest
-        silent: true
-
   db:up:
     dir: "{{.TASKFILE_DIR}}/docker"
     cmds:
@@ -53,31 +26,25 @@ tasks:
       - task: db:migrate
       - task: db:codegen
 
+  db:migrate:
+    dir: "{{.TASKFILE_DIR}}/sql/schema"
+    cmds:
+      - cmd: goose up
+        silent: true
+
+  db:migrate:down:
+    dir: "{{.TASKFILE_DIR}}/sql/schema"
+    cmds:
+      - cmd: goose down
+        silent: true
+
+  db:migrate:new:
+    dir: "{{.TASKFILE_DIR}}/sql/schema"
+    cmds:
+      - cmd: goose create {{.CLI_ARGS}} sql
+        silent: true
+
   dev:
     cmds:
       - task: db:up
       - cmd: air
-
-  image:up:
-    dir: "{{.TASKFILE_DIR}}/docker"
-    cmds:
-      - cmd: docker compose -f compose-seed.yaml up --wait
-        silent: true
-      - task: db:migrate
-        silent: true
-
-  image:down:
-    dir: "{{.TASKFILE_DIR}}/docker"
-    cmds:
-      - cmd: docker compose -f compose-seed.yaml down
-        silent: true
-
-  image:new:
-    cmds:
-      - task: image:up
-      - cmd: go run ./cmd/imager
-        silent: true
-      - task: db:push
-      - task: image:down
-      - cmd: rm -r data
-        silent: true
