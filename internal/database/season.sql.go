@@ -56,8 +56,3 @@ func (q *Queries) GetDriverStandingsByYear(ctx context.Context, year int32) ([]G
 	}
 	return items, nil
 }
-
-type SaveSeasonsParams struct {
-	Year int32
-	Url  string
-}

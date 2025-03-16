@@ -1,7 +1,3 @@
--- name: SaveSeasons :copyfrom
-INSERT INTO seasons (year, url)
-VALUES ($1, $2);
-
 -- name: GetDriverStandingsByYear :many
 SELECT
     d.id AS driver_id,

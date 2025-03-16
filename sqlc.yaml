@@ -11,7 +11,6 @@ sql:
         sql_package: pgx/v5
         output_db_file_name: database.go
         output_models_file_name: entities.sql.go
-        output_copyfrom_file_name: iterators.go
         emit_pointers_for_null_types: true
         overrides:
           - db_type: "date"
