@@ -11,14 +11,12 @@ tasks:
         silent: true
 
   db:down:
-    dir: "{{.TASKFILE_DIR}}/docker"
     cmds:
-      - cmd: docker compose -f compose-dev.yaml down
+      - cmd: docker compose down
 
   db:up:
-    dir: "{{.TASKFILE_DIR}}/docker"
     cmds:
-      - cmd: docker compose -f compose-dev.yaml up --wait
+      - cmd: docker compose up --wait
         silent: true
 
   db:update:
